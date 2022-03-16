@@ -9,6 +9,14 @@ public class Contact {
         this.contactPhone = contactPhone;
     }
 
+    @Override
+    public String toString() {
+        return "Contact{" +
+                "contactName='" + contactName + '\'' +
+                ", contactPhone='" + contactPhone + '\'' +
+                '}';
+    }
+
     public String getContactName() {
         return contactName;
     }
