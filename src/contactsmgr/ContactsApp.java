@@ -10,16 +10,30 @@ import java.util.List;
 public class ContactsApp {
     private static final String directory = "data";
     private static final String filename = "contacts.txt";
-    private static ArrayList<Contact> contactArray = new ArrayList<>();
+    private static final ArrayList<Contact> contactArray = new ArrayList<>();
     private static final String starsAndSpaces45 = "* * * * * * * * * * * * * * * * * * * * * * * * * * *";
 
     public static void main(String[] args) {
-        readTxtFileData();
-        buildMenu();
         try {
             checkDataFile();
         } catch (Exception e) {
             System.out.println(e.getMessage());
+        }
+        readTxtFileData();
+        buildMenu();
+    }
+
+    public static void checkDataFile() throws IOException {
+//        Checks if directory and txt file exists if not it creates new directory and or data file.
+        Path dataDirectory = Paths.get(directory);
+        Path dataFile = Paths.get(directory, filename);
+
+        if (Files.notExists(dataDirectory)) {
+            Files.createDirectories(dataDirectory);
+        }
+
+        if (!Files.exists(dataFile)) {
+            Files.createFile(dataFile);
         }
     }
 
@@ -56,20 +70,6 @@ public class ContactsApp {
         getMenuChoice();
     }
 
-    public static void buildMiniMenu() {
-//        Menu displayed after user views all contacts
-        System.out.println(starsAndSpaces45);
-        System.out.printf("*  1. Return to main menu.%26s*\n", " ");
-        System.out.printf("*  2. Exit program.%33s*\n", " ");
-        System.out.println(starsAndSpaces45);
-        Input input = new Input();
-        int menuChoice = input.getInt(1, 2);
-        switch (menuChoice) {
-            case 1 -> buildMenu();
-            case 2 -> exitProgram();
-        }
-    }
-
     public static void getMenuChoice() {
 //        Gets user input for navigating menu choices and calls the method chosen
         Input input = new Input();
@@ -87,6 +87,32 @@ public class ContactsApp {
 //        Display contacts followed by option to return to main menu or exit program.
         viewContacts();
         buildMiniMenu();
+    }
+
+    public static void viewContacts() {
+//        Displays all contacts in arrayList.
+        System.out.println("Here are the contacts");
+        System.out.println("Name | Phone number\n-------------");
+        int count = 0;
+        for (Contact contact : contactArray) {
+            count += 1;
+            System.out.println(count + " - " + contact.getContactName() + " | " + contact.getContactPhone());
+        }
+        System.out.println();
+    }
+
+    public static void buildMiniMenu() {
+//        Menu displayed after user views all contacts
+        System.out.println(starsAndSpaces45);
+        System.out.printf("*  1. Return to main menu.%26s*\n", " ");
+        System.out.printf("*  2. Exit program.%33s*\n", " ");
+        System.out.println(starsAndSpaces45);
+        Input input = new Input();
+        int menuChoice = input.getInt(1, 2);
+        switch (menuChoice) {
+            case 1 -> buildMenu();
+            case 2 -> exitProgram();
+        }
     }
 
     public static void addContact() {
@@ -126,29 +152,6 @@ public class ContactsApp {
         buildMenu();
     }
 
-    public static void deleteContact() {
-        // Display list of contacts
-        viewContacts();
-
-        // Ask user to choose which contact to delete
-        Input input = new Input();
-        System.out.println("Enter the number of the contact you wish to delete:");
-        int userChoice = input.getInt(1, contactArray.size());
-        int deleteThis = userChoice - 1;
-
-        // Use ArrayList.remove[user's choice minus 1]
-        // Confirm the user's intention to delete the record
-        Contact c = contactArray.get(deleteThis);
-        System.out.printf("Are you sure you want to delete %s? (y/n)", c);
-        boolean yesOrNo = input.yesNo();
-        if (yesOrNo) {
-            contactArray.remove(deleteThis);
-            buildMenu();
-        } else {
-            deleteContact();
-        }
-    }
-
     public static void searchContacts() {
 //        Gets user input to search in list of contacts and returns matching results
         System.out.println("Search contact name:");
@@ -173,29 +176,26 @@ public class ContactsApp {
         }
     }
 
-    public static void viewContacts() {
-//        Displays all contacts in arrayList.
-        System.out.println("Here are the contacts");
-        System.out.println("Name | Phone number\n-------------");
-        int count = 0;
-        for (Contact contact : contactArray) {
-            count += 1;
-            System.out.println(count + " - " + contact.getContactName() + " | " + contact.getContactPhone());
-        }
-        System.out.println();
-    }
+    public static void deleteContact() {
+        // Display list of contacts
+        viewContacts();
 
-    public static void checkDataFile() throws IOException {
-//        Checks if directory and txt file exists if not it creates new directory and or data file.
-        Path dataDirectory = Paths.get(directory);
-        Path dataFile = Paths.get(directory, filename);
+        // Ask user to choose which contact to delete
+        Input input = new Input();
+        System.out.println("Enter the number of the contact you wish to delete:");
+        int userChoice = input.getInt(1, contactArray.size());
+        int deleteThis = userChoice - 1;
 
-        if (Files.notExists(dataDirectory)) {
-            Files.createDirectories(dataDirectory);
-        }
-
-        if (!Files.exists(dataFile)) {
-            Files.createFile(dataFile);
+        // Use ArrayList.remove[user's choice minus 1]
+        // Confirm the user's intention to delete the record
+        Contact c = contactArray.get(deleteThis);
+        System.out.printf("Are you sure you want to delete %s? (y/n)", c);
+        boolean yesOrNo = input.yesNo();
+        if (yesOrNo) {
+            contactArray.remove(deleteThis);
+            buildMenu();
+        } else {
+            deleteContact();
         }
     }
 
