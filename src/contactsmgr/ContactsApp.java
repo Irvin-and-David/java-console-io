@@ -12,14 +12,28 @@ import java.util.List;
 public class ContactsApp {
     private static final String directory = "data";
     private static final String filename = "contacts.txt";
-    private static ArrayList<Contact> contactArray = new ArrayList<>();
+    private static ArrayList<String> contactArray = new ArrayList<>();
 
     public static void main(String[] args) {
+        readTxtFileData();
         buildMenu();
         try {
             checkDataFile();
         } catch (Exception e) {
             System.out.println(e.getMessage());
+        }
+    }
+
+    public static void readTxtFileData() {
+        try {
+            Path contactPath = Paths.get("data", "contacts.txt");
+            List<String> contactList = Files.readAllLines(contactPath);
+            for (String c : contactList) {
+                contactArray.add(c);
+            }
+            System.out.println(contactArray);
+        } catch (Exception e) {
+            e.getStackTrace();
         }
     }
 
@@ -45,29 +59,23 @@ public class ContactsApp {
 //                searchContacts();
                 break;
             case 4:
-//                deleteContact();
+                deleteContact();
                 break;
             case 5:
                 System.out.println("OK, bye-bye!");
                 Path filepath = Paths.get(directory, filename);
-//                try {
-//                    Files.write(filepath, (Iterable<? extends CharSequence>) contactArray);
-//                } catch (Exception ex) {
-//                    ex.printStackTrace();
-//                }
+                try {
+                    Files.write(filepath, contactArray);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
 
                 System.exit(0);
         }
     }
 
     public static void viewContacts() {
-        System.out.println("Here are the contacts");
-        System.out.println("Name | Phone number\n-------------");
-        int count = 0;
-        for (Contact contact : contactArray) {
-            count += 1;
-            System.out.println(count + " - " + contact.getContactName() + " | " + contact.getContactPhone());
-        }
+        viewContactsToDelete();
         buildMenu();
     }
 
@@ -80,7 +88,7 @@ public class ContactsApp {
         System.out.printf("Is this name correct? %s and phone %s (y/n)", contactName, contactPhone);
         if (input.yesNo()) {
             Contact contact = new Contact(contactName, contactPhone);
-            contactArray.add(contact);
+            contactArray.add(contact.toString());
             System.out.println(contact.getContactName() + " " + contact.getContactPhone());
         } else {
             addContact();
@@ -94,23 +102,34 @@ public class ContactsApp {
 
     public static void deleteContact() {
         // Display list of contacts
-        viewContacts();
+        viewContactsToDelete();
 
         // Ask user to choose which contact to delete
         Input input = new Input();
         System.out.println("Enter the number of the contact you wish to delete:");
-        int userChoice = input.getInt(1,contactArray.size());
+        int userChoice = input.getInt(1, contactArray.size());
         int deleteThis = userChoice - 1;
 
         // Use ArrayList.remove[user's choice minus 1]
         // Confirm the user's intention to delete the record
-        Contact c = contactArray.get(deleteThis);
-        System.out.printf("Are you sure you want to delete %s? (y/n)",c.getContactName());
+        String c = contactArray.get(deleteThis);
+        System.out.printf("Are you sure you want to delete %s? (y/n)", c);
         boolean yesOrNo = input.yesNo();
         if (yesOrNo) {
             contactArray.remove(deleteThis);
+            buildMenu();
         } else {
             deleteContact();
+        }
+    }
+
+    public static void viewContactsToDelete() {
+        System.out.println("Here are the contacts");
+        System.out.println("Name | Phone number\n-------------");
+        int count = 0;
+        for (String contact : contactArray) {
+            count += 1;
+            System.out.println(count + " - " + contact);
         }
     }
 
