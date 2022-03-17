@@ -62,10 +62,11 @@ public class ContactsApp {
         System.out.printf("*  1. View contacts.%32s*\n", " ");
         System.out.printf("*  2. Add a new contact.%28s*\n", " ");
         System.out.printf("*  3. Search a contact by name.%21s*\n", " ");
-        System.out.printf("*  4. Delete an existing contact.%19s*\n", " ");
-        System.out.printf("*  5. Exit program.%33s*\n", " ");
+        System.out.printf("*  4. Edit a contact's details.%21s*\n", " ");
+        System.out.printf("*  5. Delete an existing contact.%19s*\n", " ");
+        System.out.printf("*  6. Exit program.%33s*\n", " ");
         System.out.println(starsAndSpaces45);
-        System.out.println("Enter an option (1, 2, 3, 4, 5):");
+        System.out.println("Enter an option (1 - 6):");
 //      Call to allow user to enter menu choice
         getMenuChoice();
     }
@@ -73,13 +74,20 @@ public class ContactsApp {
     public static void getMenuChoice() {
 //        Gets user input for navigating menu choices and calls the method chosen
         Input input = new Input();
-        int menuChoice = input.getInt(1, 5);
+        int menuChoice = input.getInt(1, 6);
         switch (menuChoice) {
-            case 1: viewContactsPlus();
-            case 2: addContact();
-            case 3: searchContacts();
-            case 4: deleteContact();
-            case 5: exitProgram();
+            case 1:
+                viewContactsPlus();
+            case 2:
+                addContact();
+            case 3:
+                searchContacts();
+            case 4:
+                editContactMenu();
+            case 5:
+                deleteContact();
+            case 6:
+                exitProgram();
         }
     }
 
@@ -111,8 +119,10 @@ public class ContactsApp {
         Input input = new Input();
         int menuChoice = input.getInt(1, 2);
         switch (menuChoice) {
-            case 1: buildMenu();
-            case 2: exitProgram();
+            case 1:
+                buildMenu();
+            case 2:
+                exitProgram();
         }
     }
 
@@ -123,21 +133,8 @@ public class ContactsApp {
         String contactName = input.getString();
         System.out.println("Enter the contact's telephone number:");
         String contactPhone = input.getString();
-        String areaCode;
-        String prefix;
-        String postfix;
-        if (!contactPhone.contains("-")) {
-            if (contactPhone.length() == 7) {
-                prefix = contactPhone.substring(0,3);
-                postfix = contactPhone.substring(3);
-                contactPhone = prefix + "-" + postfix;
-            } else if (contactPhone.length() == 10) {
-                areaCode = contactPhone.substring(0,3);
-                prefix = contactPhone.substring(3,6);
-                postfix = contactPhone.substring(6);
-                contactPhone = areaCode + "-" + prefix + "-" + postfix;
-            }
-        }
+        contactPhone = formatNumbers(contactPhone);
+
         System.out.printf("Is this name correct? %s and phone %s (y/n)", contactName, contactPhone);
         if (input.yesNo()) {
             Contact contact = new Contact(contactName, contactPhone);
@@ -151,6 +148,26 @@ public class ContactsApp {
             addContact();
         }
         buildMenu();
+    }
+
+    public static String formatNumbers(String numberToFormat) {
+        String areaCode;
+        String prefix;
+        String postfix;
+        String result = null;
+        if (!numberToFormat.contains("-")) {
+            if (numberToFormat.length() == 7) {
+                prefix = numberToFormat.substring(0, 3);
+                postfix = numberToFormat.substring(3);
+                result = prefix + "-" + postfix;
+            } else if (numberToFormat.length() == 10) {
+                areaCode = numberToFormat.substring(0, 3);
+                prefix = numberToFormat.substring(3, 6);
+                postfix = numberToFormat.substring(6);
+                result = areaCode + "-" + prefix + "-" + postfix;
+            }
+        }
+        return result;
     }
 
     public static void searchContacts() {
@@ -174,6 +191,41 @@ public class ContactsApp {
             searchContacts();
         } else {
             buildMenu();
+        }
+    }
+
+    private static void editContactMenu() {
+        System.out.println("1 - View all contacts\n2 - Search a contact");
+        Input input = new Input();
+        int userChoice = input.getInt(1, 2);
+        if (userChoice == 1) {
+            viewContacts();
+            editContactsListAll();
+        } else if (userChoice == 2) {
+            searchContacts();
+        }
+    }
+
+    private static void editContactsListAll() {
+        viewContacts();
+        System.out.println("Select a contact to edit");
+        Input input = new Input();
+        int arrSize = contactArray.size();
+        int userInput = input.getInt(1, arrSize);
+        Contact thisContact = contactArray.get(userInput - 1);
+        System.out.printf("Is this the contact you want to edit? (y/n) %s %s\n", thisContact.getContactName(), thisContact.getContactPhone());
+//        Add yes no
+        System.out.println("Name: (Enter correct name or press enter/return if name is correct.)");
+        String newName = input.getString();
+        if (!newName.equalsIgnoreCase("")) {
+            thisContact.setContactName(newName);
+            System.out.println("Name changed!");
+        }
+        System.out.println("Phone number: (Enter correct phone number or press enter/return if number is correct");
+        String newPhoneNumber = input.getString();
+        if (!newPhoneNumber.equalsIgnoreCase("")) {
+            thisContact.setContactPhone(formatNumbers(newPhoneNumber));
+            System.out.println("Number changed!");
         }
     }
 
