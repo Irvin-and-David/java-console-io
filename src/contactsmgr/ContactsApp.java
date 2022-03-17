@@ -13,7 +13,8 @@ import java.util.Locale;
 public class ContactsApp {
     private static final String directory = "data";
     private static final String filename = "contacts.txt";
-    private static ArrayList<String> contactArray = new ArrayList<>();
+    private static ArrayList<Contact> contactArray = new ArrayList<>();
+    private static final String starsAndSpaces45 = "* * * * * * * * * * * * * * * * * * * * * * * * * * *";
 
     public static void main(String[] args) {
         readTxtFileData();
@@ -29,29 +30,54 @@ public class ContactsApp {
         try {
             Path contactPath = Paths.get("data", "contacts.txt");
             List<String> contactList = Files.readAllLines(contactPath);
+            //Take the resulting string, delimited by a |, and split it
+            //into name & phone fields.
             for (String c : contactList) {
-                contactArray.add(c);
+                String [] cParts = c.split(", ");
+                Contact loopContact = new Contact(cParts[0],cParts[1]);
+                contactArray.add(loopContact);
             }
-            System.out.println(contactArray);
+//            System.out.println(contactArray);
         } catch (Exception e) {
             e.getStackTrace();
         }
     }
 
     public static void buildMenu() {
-        System.out.println("* * * * * * * * * * * * * * * * * * * * * * * * * * * ");
+        System.out.println(starsAndSpaces45);
         System.out.println("*  SUPER-HIGH-TECH CONTACT MANAGEMENT APPLICATION!  *");
-        System.out.println("*  1. View contacts.\n2. Add a new contact.\n3. Search a contact by name.\n" +
-                "4. Delete an existing contact.\n5. Exit.\nEnter an option (1, 2, 3, 4, 5):");
+        System.out.printf("*  1. View contacts.%32s*\n"," ");
+        System.out.printf("*  2. Add a new contact.%28s*\n"," ");
+        System.out.printf("*  3. Search a contact by name.%21s*\n"," ");
+        System.out.printf("*  4. Delete an existing contact.%19s*\n"," ");
+        System.out.printf("*  5. Exit program.%33s*\n"," ");
+        System.out.println(starsAndSpaces45);
+        System.out.println("Enter an option (1, 2, 3, 4, 5):");
+
         getMenuChoice();
     }
 
+    public static void buildMiniMenu() {
+        System.out.println(starsAndSpaces45);
+        System.out.printf("*  1. Return to main menu.%26s*\n"," ");
+        System.out.printf("*  2. Exit program.%33s*\n"," ");
+        System.out.println(starsAndSpaces45);
+        Input input = new Input();
+        int menuChoice = input.getInt(1, 2);
+        switch (menuChoice) {
+            case 1:
+                buildMenu();
+                break;
+            case 2:
+                exitProgram();
+        }
+    }
     public static void getMenuChoice() {
         Input input = new Input();
         int menuChoice = input.getInt(1, 5);
         switch (menuChoice) {
             case 1:
-                viewContacts();
+                viewContactsPlus();
                 break;
             case 2:
                 addContact();
@@ -63,21 +89,13 @@ public class ContactsApp {
                 deleteContact();
                 break;
             case 5:
-                System.out.println("OK, bye-bye!");
-                Path filepath = Paths.get(directory, filename);
-                try {
-                    Files.write(filepath, contactArray);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-
-                System.exit(0);
+                exitProgram();
         }
     }
 
-    public static void viewContacts() {
-        viewContactsToDelete();
-        buildMenu();
+    public static void viewContactsPlus() {
+        viewContacts();
+        buildMiniMenu();
     }
 
     public static void addContact() {
@@ -89,7 +107,7 @@ public class ContactsApp {
         System.out.printf("Is this name correct? %s and phone %s (y/n)", contactName, contactPhone);
         if (input.yesNo()) {
             Contact contact = new Contact(contactName, contactPhone);
-            contactArray.add(contact.toString());
+            contactArray.add(contact);
             System.out.println(contact.getContactName() + " " + contact.getContactPhone());
         } else {
             addContact();
@@ -103,7 +121,7 @@ public class ContactsApp {
 
     public static void deleteContact() {
         // Display list of contacts
-        viewContactsToDelete();
+        viewContacts();
 
         // Ask user to choose which contact to delete
         Input input = new Input();
@@ -113,7 +131,7 @@ public class ContactsApp {
 
         // Use ArrayList.remove[user's choice minus 1]
         // Confirm the user's intention to delete the record
-        String c = contactArray.get(deleteThis);
+        Contact c = contactArray.get(deleteThis);
         System.out.printf("Are you sure you want to delete %s? (y/n)", c);
         boolean yesOrNo = input.yesNo();
         if (yesOrNo) {
@@ -129,9 +147,9 @@ public class ContactsApp {
         Input input = new Input();
         String userSearch = input.getString().toLowerCase();
         ArrayList<String> tempArr = new ArrayList<>();
-        for (String contact : contactArray) {
-            if (contact.toLowerCase().contains(userSearch)) {
-                tempArr.add(contact);
+        for (Contact contact : contactArray) {
+            if (contact.toString().toLowerCase().contains(userSearch)) {
+                tempArr.add(contact.toString());
             }
         }
         System.out.println(tempArr);
@@ -143,14 +161,15 @@ public class ContactsApp {
         }
     }
 
-    public static void viewContactsToDelete() {
+    public static void viewContacts() {
         System.out.println("Here are the contacts");
         System.out.println("Name | Phone number\n-------------");
         int count = 0;
-        for (String contact : contactArray) {
+        for (Contact contact : contactArray) {
             count += 1;
-            System.out.println(count + " - " + contact);
+            System.out.println(count + " - " + contact.getContactName() + " | " + contact.getContactPhone());
         }
+        System.out.println();
     }
 
     public static void checkDataFile() throws IOException {
@@ -164,5 +183,21 @@ public class ContactsApp {
         if (!Files.exists(dataFile)) {
             Files.createFile(dataFile);
         }
+    }
+
+    public static void exitProgram() {
+        System.out.println("OK, bye-bye!");
+        Path filepath = Paths.get(directory, filename);
+        List<String> contactStringArray = new ArrayList<>();
+        try {
+            for (Contact c : contactArray) {
+                contactStringArray.add(c.toString());
+            }
+            Files.write(filepath, contactStringArray);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        System.exit(0);
     }
 }
