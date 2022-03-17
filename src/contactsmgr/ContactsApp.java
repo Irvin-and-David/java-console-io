@@ -75,11 +75,11 @@ public class ContactsApp {
         Input input = new Input();
         int menuChoice = input.getInt(1, 5);
         switch (menuChoice) {
-            case 1 -> viewContactsPlus();
-            case 2 -> addContact();
-            case 3 -> searchContacts();
-            case 4 -> deleteContact();
-            case 5 -> exitProgram();
+            case 1: viewContactsPlus();
+            case 2: addContact();
+            case 3: searchContacts();
+            case 4: deleteContact();
+            case 5: exitProgram();
         }
     }
 
@@ -92,11 +92,12 @@ public class ContactsApp {
     public static void viewContacts() {
 //        Displays all contacts in arrayList.
         System.out.println("Here are the contacts");
-        System.out.println("Name | Phone number\n-------------");
+        System.out.printf("%7s Name %-6s | Phone number |\n------------------------------------\n", "", "");
         int count = 0;
         for (Contact contact : contactArray) {
             count += 1;
-            System.out.println(count + " - " + contact.getContactName() + " | " + contact.getContactPhone());
+            System.out.printf("%d - %-15s | %-12s |\n", count, contact.getContactName(), contact.getContactPhone());
+//            System.out.println(count + " - " + contact.getContactName() + " | " + contact.getContactPhone());
         }
         System.out.println();
     }
@@ -110,8 +111,8 @@ public class ContactsApp {
         Input input = new Input();
         int menuChoice = input.getInt(1, 2);
         switch (menuChoice) {
-            case 1 -> buildMenu();
-            case 2 -> exitProgram();
+            case 1: buildMenu();
+            case 2: exitProgram();
         }
     }
 
