@@ -78,14 +78,19 @@ public class ContactsApp {
         switch (menuChoice) {
             case 1:
                 viewContactsPlus();
+                break;
             case 2:
                 addContact();
+                break;
             case 3:
                 searchContacts();
+                break;
             case 4:
                 editContactMenu();
+                break;
             case 5:
                 deleteContact();
+                break;
             case 6:
                 exitProgram();
         }
@@ -166,6 +171,8 @@ public class ContactsApp {
                 postfix = numberToFormat.substring(6);
                 result = areaCode + "-" + prefix + "-" + postfix;
             }
+        } else {
+             result = numberToFormat;
         }
         return result;
     }
@@ -207,7 +214,7 @@ public class ContactsApp {
     }
 
     private static void editContactsListAll() {
-        viewContacts();
+//        viewContacts();
         System.out.println("Select a contact to edit");
         Input input = new Input();
         int arrSize = contactArray.size();
@@ -215,18 +222,27 @@ public class ContactsApp {
         Contact thisContact = contactArray.get(userInput - 1);
         System.out.printf("Is this the contact you want to edit? (y/n) %s %s\n", thisContact.getContactName(), thisContact.getContactPhone());
 //        Add yes no
-        System.out.println("Name: (Enter correct name or press enter/return if name is correct.)");
-        String newName = input.getString();
-        if (!newName.equalsIgnoreCase("")) {
-            thisContact.setContactName(newName);
-            System.out.println("Name changed!");
+        boolean yesNo = input.yesNo();
+        if (yesNo) {
+            System.out.println(thisContact);
+            System.out.println("Name: (Enter correct name or press enter/return if name is correct.)");
+            String newName = input.getString();
+            if (!newName.equalsIgnoreCase("")) {
+                thisContact.setContactName(newName);
+                System.out.println("Name changed!");
+            }
+            System.out.println("Phone number: (Enter correct phone number or press enter/return if number is correct.)");
+            String newPhoneNumber = input.getString();
+            if (!newPhoneNumber.equalsIgnoreCase("")) {
+                System.out.println("New number: " + formatNumbers(newPhoneNumber));
+                thisContact.setContactPhone(formatNumbers(newPhoneNumber));
+                System.out.println("Formatted Number: " + thisContact.getContactPhone());
+                System.out.println("Number changed!");
+            }
+        } else {
+            editContactsListAll();
         }
-        System.out.println("Phone number: (Enter correct phone number or press enter/return if number is correct");
-        String newPhoneNumber = input.getString();
-        if (!newPhoneNumber.equalsIgnoreCase("")) {
-            thisContact.setContactPhone(formatNumbers(newPhoneNumber));
-            System.out.println("Number changed!");
-        }
+        buildMenu();
     }
 
     public static void deleteContact() {
