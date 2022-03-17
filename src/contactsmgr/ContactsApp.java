@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class ContactsApp {
     private static final String directory = "data";
@@ -56,7 +57,7 @@ public class ContactsApp {
                 addContact();
                 break;
             case 3:
-//                searchContacts();
+                searchContacts();
                 break;
             case 4:
                 deleteContact();
@@ -120,6 +121,25 @@ public class ContactsApp {
             buildMenu();
         } else {
             deleteContact();
+        }
+    }
+
+    public static void searchContacts() {
+        System.out.println("Search contact name:");
+        Input input = new Input();
+        String userSearch = input.getString().toLowerCase();
+        ArrayList<String> tempArr = new ArrayList<>();
+        for (String contact : contactArray) {
+            if (contact.toLowerCase().contains(userSearch)) {
+                tempArr.add(contact);
+            }
+        }
+        System.out.println(tempArr);
+        System.out.println("Would you like to do another search? (y/n)");
+        if (input.yesNo()) {
+            searchContacts();
+        } else {
+            buildMenu();
         }
     }
 
