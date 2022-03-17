@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ContactsApp {
@@ -96,6 +97,12 @@ public class ContactsApp {
         }
     }
 
+    public static void sortContacts() {
+//        ContactComparator comparator = new ContactComparator();
+//        contactArray.sort(comparator);
+        Collections.sort(contactArray);
+    }
+
     public static void viewContactsPlus() {
 //        Display contacts followed by option to return to main menu or exit program.
         viewContacts();
@@ -107,6 +114,7 @@ public class ContactsApp {
         System.out.println("Here are the contacts");
         System.out.printf("%7s Name %-6s | Phone number |\n------------------------------------\n", "", "");
         int count = 0;
+        sortContacts();
         for (Contact contact : contactArray) {
             count += 1;
             System.out.printf("%d - %-15s | %-12s |\n", count, contact.getContactName(), contact.getContactPhone());
@@ -274,6 +282,7 @@ public class ContactsApp {
         Path filepath = Paths.get(directory, filename);
         List<String> contactStringArray = new ArrayList<>();
         try {
+            sortContacts();
             for (Contact c : contactArray) {
                 contactStringArray.add(c.toString());
             }

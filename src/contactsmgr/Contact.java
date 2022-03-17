@@ -1,6 +1,8 @@
 package contactsmgr;
 
-public class Contact {
+import java.util.Locale;
+
+public class Contact implements Comparable {
     private String contactName;
     private String contactPhone;
 
@@ -28,5 +30,11 @@ public class Contact {
 
     public void setContactPhone(String contactPhone) {
         this.contactPhone = contactPhone;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        Contact c2 = (Contact) o;
+        return this.contactName.toLowerCase().compareTo(c2.getContactName().toLowerCase());
     }
 }
