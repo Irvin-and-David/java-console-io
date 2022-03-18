@@ -13,6 +13,15 @@ public class ContactsApp {
     private static final String filename = "contacts.txt";
     private static final ArrayList<Contact> contactArray = new ArrayList<>();
     private static final String starsAndSpaces45 = "* * * * * * * * * * * * * * * * * * * * * * * * * * *";
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_BLACK = "\u001B[30m";
+    public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_YELLOW = "\u001B[33m";
+    public static final String ANSI_BLUE = "\u001B[34m";
+    public static final String ANSI_PURPLE = "\u001B[35m";
+    public static final String ANSI_CYAN = "\u001B[36m";
+    public static final String ANSI_WHITE = "\u001B[37m";
 
     public static void main(String[] args) {
         try {
@@ -59,14 +68,14 @@ public class ContactsApp {
     public static void buildMenu() {
 //        Display options to user
         System.out.println(starsAndSpaces45);
-        System.out.println("*  SUPER-HIGH-TECH CONTACT MANAGEMENT APPLICATION!  *");
-        System.out.printf("*  1. View contacts.%32s*\n", " ");
-        System.out.printf("*  2. Add a new contact.%28s*\n", " ");
-        System.out.printf("*  3. Search a contact by name.%21s*\n", " ");
-        System.out.printf("*  4. Edit a contact's details.%21s*\n", " ");
-        System.out.printf("*  5. Delete an existing contact.%19s*\n", " ");
-        System.out.printf("*  6. Exit program.%33s*\n", " ");
-        System.out.println(starsAndSpaces45);
+        System.out.println(ANSI_RED + "*  SUPER-HIGH-TECH CONTACT MANAGEMENT APPLICATION!  *");
+        System.out.printf(ANSI_GREEN + "*  1. View contacts.%32s*\n", " ");
+        System.out.printf(ANSI_GREEN + "*  2. Add a new contact.%28s*\n", " ");
+        System.out.printf(ANSI_GREEN + "*  3. Search a contact by name.%21s*\n", " ");
+        System.out.printf(ANSI_GREEN + "*  4. Edit a contact's details.%21s*\n", " ");
+        System.out.printf(ANSI_GREEN + "*  5. Delete an existing contact.%19s*\n", " ");
+        System.out.printf(ANSI_GREEN + "*  6. Exit program.%33s*\n", " ");
+        System.out.println(ANSI_RED + starsAndSpaces45 + ANSI_RESET);
         System.out.println("Enter an option (1 - 6):");
 //      Call to allow user to enter menu choice
         getMenuChoice();
@@ -125,10 +134,10 @@ public class ContactsApp {
 
     public static void buildMiniMenu() {
 //        Menu displayed after user views all contacts
-        System.out.println(starsAndSpaces45);
-        System.out.printf("*  1. Return to main menu.%26s*\n", " ");
-        System.out.printf("*  2. Exit program.%33s*\n", " ");
-        System.out.println(starsAndSpaces45);
+        System.out.println(ANSI_RED + "*  SUPER-HIGH-TECH CONTACT MANAGEMENT APPLICATION!  *");
+        System.out.printf(ANSI_GREEN + "*  1. Return to main menu.%26s*\n", " ");
+        System.out.printf(ANSI_GREEN + "*  2. Exit program.%33s*\n", " ");
+        System.out.println(ANSI_RED + "*  SUPER-HIGH-TECH CONTACT MANAGEMENT APPLICATION!  *" + ANSI_RESET);
         Input input = new Input();
         int menuChoice = input.getInt(1, 2);
         switch (menuChoice) {
@@ -186,7 +195,7 @@ public class ContactsApp {
     }
 
     public static void searchContacts() {
-//        Gets user input to search in list of contacts and returns matching results
+        //  Gets user input to search in list of contacts and returns matching results
         System.out.println("Search contact name:");
         Input input = new Input();
         String userSearch = input.getString().toLowerCase();
@@ -209,15 +218,62 @@ public class ContactsApp {
         }
     }
 
+    public static void searchForEditing() {
+    //  Gets user input to search in list of contacts and returns matching results
+        System.out.println("Search contact name:");
+        Input input = new Input();
+        int count = 0;
+        String userSearch = input.getString().toLowerCase();
+        ArrayList<Contact> tempArr = new ArrayList<>();
+        for (Contact contact : contactArray) {
+            if (contact.toString().toLowerCase().contains(userSearch)) {
+                tempArr.add(contact);
+            }
+        }
+        if (tempArr.size() == 0) {
+            System.out.println("No matches were found.");
+            searchForEditing();
+        } else {
+            for (Contact c : tempArr) {
+                count++;
+                System.out.println(count + " - " + c.getContactName() + " | " + c.getContactPhone());
+            }
+            System.out.println("Enter the number (not phone number) of the contact you would like to edit:");
+            int whichContact = input.getInt(1, tempArr.size());
+            Contact thisContact = tempArr.get(whichContact - 1);
+            System.out.printf("Is this the contact you want to edit? (y/n) %s %s\n", thisContact.getContactName(), thisContact.getContactPhone());
+            //        Add yes no
+            boolean yesNo = input.yesNo();
+            if (yesNo) {
+                System.out.println(thisContact);
+                System.out.println("Name: (Enter correct name or press enter/return if name is correct.)");
+                String newName = input.getString();
+                if (!newName.equalsIgnoreCase("")) {
+                    thisContact.setContactName(newName);
+                    System.out.println("Name changed!");
+                }
+                System.out.println("Phone number: (Enter correct phone number or press enter/return if number is correct.)");
+                String newPhoneNumber = input.getString();
+                if (!newPhoneNumber.equalsIgnoreCase("")) {
+                    thisContact.setContactPhone(formatNumbers(newPhoneNumber));
+                    System.out.println("Number changed!");
+                }
+            } else {
+                searchForEditing();
+            }
+            buildMenu();
+        }
+    }
+
     private static void editContactMenu() {
-        System.out.println("1 - View all contacts\n2 - Search a contact");
+        System.out.println(ANSI_GREEN + "1 - View all contacts\n2 - Search a contact" + ANSI_RESET);
         Input input = new Input();
         int userChoice = input.getInt(1, 2);
         if (userChoice == 1) {
             viewContacts();
             editContactsListAll();
         } else if (userChoice == 2) {
-            searchContacts();
+            searchForEditing();
         }
     }
 
@@ -242,9 +298,7 @@ public class ContactsApp {
             System.out.println("Phone number: (Enter correct phone number or press enter/return if number is correct.)");
             String newPhoneNumber = input.getString();
             if (!newPhoneNumber.equalsIgnoreCase("")) {
-                System.out.println("New number: " + formatNumbers(newPhoneNumber));
                 thisContact.setContactPhone(formatNumbers(newPhoneNumber));
-                System.out.println("Formatted Number: " + thisContact.getContactPhone());
                 System.out.println("Number changed!");
             }
         } else {
