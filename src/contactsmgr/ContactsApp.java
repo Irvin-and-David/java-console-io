@@ -22,6 +22,8 @@ public class ContactsApp {
     public static final String ANSI_PURPLE = "\u001B[35m";
     public static final String ANSI_CYAN = "\u001B[36m";
     public static final String ANSI_WHITE = "\u001B[37m";
+    public static final String redStarGreen = ANSI_RED + "*  " + ANSI_GREEN;
+    public static final String redStarNewLine = ANSI_RED + "*\n";
 
     public static void main(String[] args) {
         try {
@@ -67,14 +69,14 @@ public class ContactsApp {
 
     public static void buildMenu() {
 //        Display options to user
-        System.out.println(starsAndSpaces45);
-        System.out.println(ANSI_RED + "*  SUPER-HIGH-TECH CONTACT MANAGEMENT APPLICATION!  *");
-        System.out.printf(ANSI_GREEN + "*  1. View contacts.%32s*\n", " ");
-        System.out.printf(ANSI_GREEN + "*  2. Add a new contact.%28s*\n", " ");
-        System.out.printf(ANSI_GREEN + "*  3. Search a contact by name.%21s*\n", " ");
-        System.out.printf(ANSI_GREEN + "*  4. Edit a contact's details.%21s*\n", " ");
-        System.out.printf(ANSI_GREEN + "*  5. Delete an existing contact.%19s*\n", " ");
-        System.out.printf(ANSI_GREEN + "*  6. Exit program.%33s*\n", " ");
+        System.out.println(ANSI_RED + starsAndSpaces45);
+        System.out.println(ANSI_RED + "*  " + ANSI_RESET + "SUPER-HIGH-TECH CONTACT MANAGEMENT APPLICATION!" + ANSI_RED + "  *");
+        System.out.printf(redStarGreen + "1. View contacts.%32s" + redStarNewLine, " ");
+        System.out.printf(redStarGreen + "2. Add a new contact.%28s" + redStarNewLine, " ");
+        System.out.printf(redStarGreen+ "3. Search a contact by name.%21s" + redStarNewLine, " ");
+        System.out.printf(redStarGreen + "4. Edit a contact's details.%21s" + redStarNewLine, " ");
+        System.out.printf(redStarGreen + "5. Delete an existing contact.%19s" + redStarNewLine, " ");
+        System.out.printf(redStarGreen + "6. Exit program.%33s" + redStarNewLine, " ");
         System.out.println(ANSI_RED + starsAndSpaces45 + ANSI_RESET);
         System.out.println("Enter an option (1 - 6):");
 //      Call to allow user to enter menu choice
@@ -153,6 +155,15 @@ public class ContactsApp {
         Input input = new Input();
         System.out.println("Enter the contact's first and last name:");
         String contactName = input.getString();
+        for (Contact c : contactArray) {
+            if (c.getContactName().equalsIgnoreCase(contactName)) {
+                System.out.println("There is already a contact with that name. Is this a different contact? (y/n)");
+                boolean duplicateOrNah = input.yesNo();
+                if (!duplicateOrNah) {
+                    addContact();
+                }
+            }
+        }
         System.out.println("Enter the contact's telephone number:");
         String contactPhone = input.getString();
         contactPhone = formatNumbers(contactPhone);
