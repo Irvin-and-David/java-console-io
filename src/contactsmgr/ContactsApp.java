@@ -335,6 +335,7 @@ public class ContactsApp {
         boolean yesOrNo = input.yesNo();
         if (yesOrNo) {
             contactArray.remove(deleteThis);
+            System.out.println("Contact deleted.");
             buildMenu();
         } else {
             deleteContact();
